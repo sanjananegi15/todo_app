@@ -1,4 +1,3 @@
-// src/components/TodoList.js
 import React, { useState } from "react";
 
 const TodoList = ({ todos, deleteTodo, updateTodo }) => {
@@ -10,33 +9,41 @@ const TodoList = ({ todos, deleteTodo, updateTodo }) => {
     taskDescription: "",
   });
 
-  // Enter edit mode for a specific todo item
+  const [errors, setErrors] = useState({});
+
   const handleEdit = (index, todo) => {
-    setIsEditing(index); // Set the index of the todo item being edited
-    setEditData(todo); // Set the current todo data to be edited
+    setIsEditing(index);
+    setEditData(todo);
+    setErrors({});
   };
 
-  // Handle changes in the edit input fields
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setEditData({ ...editData, [name]: value }); // Update only the specific field in editData
+    setEditData({ ...editData, [name]: value });
   };
 
-  // Save changes and exit edit mode
   const handleSave = (index) => {
-    updateTodo(index, editData); // Update the todo item in the main todo list
-    setIsEditing(null); // Exit edit mode
-    setEditData({ name: "", email: "", taskName: "", taskDescription: "" }); // Clear editData
+    updateTodo(index, editData);
+    setIsEditing(null);
+    setEditData({ name: "", email: "", taskName: "", taskDescription: "" });
+  };
+
+  const handleDelete = (index) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this task?"
+    );
+    if (confirmDelete) {
+      deleteTodo(index); // Call delete function if confirmed
+    }
   };
 
   return (
     <div className="todo-list">
-      <h2>Todo List</h2>
+      <h2 className="font-bold">Todo List</h2>
       {todos.length ? (
         todos.map((todo, index) => (
           <div key={index} className="todo-item">
             {isEditing === index ? (
-              // Edit mode for the specific todo item
               <>
                 <input
                   type="text"
@@ -73,20 +80,19 @@ const TodoList = ({ todos, deleteTodo, updateTodo }) => {
                 <div className="flex gap-2 w-full items-center justify-center">
                   <button
                     onClick={() => handleSave(index)}
-                    className=" !flex-1 text-white"
+                    className="flex-1 text-white"
                   >
                     Save
                   </button>
                   <button
                     onClick={() => setIsEditing(null)}
-                    className=" !flex-1 text-white"
+                    className="flex-1 text-white"
                   >
                     Cancel
                   </button>
                 </div>
               </>
             ) : (
-              // Display mode for the todo item
               <>
                 <p>
                   <strong>Name:</strong> {todo.name}
@@ -102,14 +108,14 @@ const TodoList = ({ todos, deleteTodo, updateTodo }) => {
                 </p>
                 <div className="flex gap-2 w-full items-center justify-center">
                   <button
-                    className="flex-1 text-white "
+                    className="flex-1 text-white"
                     onClick={() => handleEdit(index, todo)}
                   >
                     Edit
                   </button>
                   <button
                     className="delete flex-1"
-                    onClick={() => deleteTodo(index)}
+                    onClick={() => handleDelete(index)}
                   >
                     Delete
                   </button>
@@ -119,7 +125,7 @@ const TodoList = ({ todos, deleteTodo, updateTodo }) => {
           </div>
         ))
       ) : (
-        <div>Add your todo's for today!</div>
+        <div>Add your todos for today!</div>
       )}
     </div>
   );
